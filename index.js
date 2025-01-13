@@ -17,9 +17,9 @@ connection(process.env.MONGO_URL)
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/users', userRoute);
+app.use('/users', userRoute);
 
 
 app.listen(port, () => {
-    console.log(`Server is running on port http://localhost:${port}/`);
+    console.log(`Server is running on port http://localhost:${port}`);
 })

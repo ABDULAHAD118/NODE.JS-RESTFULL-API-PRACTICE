@@ -1,14 +1,13 @@
-const users = require('../MOCK_DATA.json')
-// const User = require('../models/user')
-const fs = require('fs');
+const User = require('../models/users')
 
 const handleAllUser = async (req, res) => {
-    return res.json(users)
+    const allUsers = await User.find({});
+    return res.json(allUsers)
 }
 
 const handleSearchUser = async (req, res) => {
     const id = req.params.id;
-    const user = users.find(user => user.id == id)
+    const user = await User.findById(id)
     if (!user) {
         return res.status(404).json({ message: 'User not found' })
     }
@@ -17,47 +16,59 @@ const handleSearchUser = async (req, res) => {
 
 const handleEditUser = async (req, res) => {
     const id = req.params.id;
-    const user = users.find(user => user.id == id)
+    const updatedUser = req.body;
+    const user = await User.findById(id);
     if (!user) {
         return res.status(404).json({ message: 'User not found' })
     } else {
-        const updatedUser = req.body;
-        users[users.indexOf(user)] = { id: user.id, ...updatedUser }
-        fs.writeFile('../MOCK_DATA.json', JSON.stringify(users), (err, data) => {
-            if (err) {
-                console.log(err)
-            }
-            return res.json({ message: 'Updated user' })
-        })
+        const dbUser = await User.findOne({ email: updatedUser.email })
+        if (dbUser) {
+            return res.json({ message: "Email Already Used!" })
+        }
+        else {
+            const result = await User.updateOne({
+                first_name: updatedUser.first_name,
+                last_name: updatedUser.last_name,
+                email: updatedUser.email,
+                gender: updatedUser.gender,
+                job_title: updatedUser.job_title
+            })
+            return res.json({ id: result._id, message: "User Updated Successfully!" })
+        }
     }
 }
 
 const handelDeleteUser = async (req, res) => {
     const id = req.params.id;
-    const user = users.find(user => user.id == id)
+    const user = await User.findByIdAndDelete(id)
     if (!user) {
         return res.status(404).json({ message: 'User not found' })
     } else {
-        users.splice(users.indexOf(user), 1)
-        fs.writeFile('../MOCK_DATA.json', JSON.stringify(users), (err, data) => {
-            if (err) {
-                console.log(err)
-            }
-            return res.json({ message: 'Deleted user' })
-        })
+        return res.json({ message: 'User deleted' })
     }
 }
 
 const handleAddUser = async (req, res) => {
-    const user = req.body;
-    console.log(user);
-    users.push({ id: users.length + 1, ...user });
-    fs.writeFile('../MOCK_DATA.json', JSON.stringify(users), (err, data) => {
-        if (err) {
-            console.log(err)
+    const body = req.body;
+    if (body.first_name && body.last_name && body.email && body.gender && body.job_title) {
+        const dbUser = await User.findOne({ email: body.email })
+        if (dbUser) {
+            return res.json({ message: "Email Already Used!" })
         }
-        return res.status(201).json({ id: users.length, message: 'User created' })
-    })
+        else {
+            const result = await User.create({
+                first_name: body.first_name,
+                last_name: body.last_name,
+                email: body.email,
+                gender: body.gender,
+                job_title: body.job_title
+            })
+            return res.status(201).json({ id: result._id, message: 'User created Successfully!' })
+        }
+    }
+    else {
+        return res.json({ message: "Send all required fields!" })
+    }
 }
 
 module.exports = {
