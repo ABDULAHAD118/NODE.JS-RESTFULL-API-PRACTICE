@@ -14,8 +14,11 @@
   "author": "",
   "type": "commonjs",
   "main": "index.js",
+  " engines": {
+    "node": "14.x"
+  },
   "scripts": {
-    "start": "nodemon index"
+    "start": "node index"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
