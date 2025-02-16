@@ -1,8 +1,8 @@
 const User = require('../models/users')
 
 const handleAllUser = async (req, res) => {
-    const allUsers = await User.find({});
-    return res.json(allUsers)
+    // const allUsers = await User.find({});
+    return res.json({ message: "Working Good" })
 }
 
 const handleSearchUser = async (req, res) => {
