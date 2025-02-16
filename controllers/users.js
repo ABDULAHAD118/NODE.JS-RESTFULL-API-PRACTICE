@@ -3,9 +3,9 @@ const User = require('../models/users')
 const handleAllUser = async (req, res) => {
     const allUsers = await User.find({});
     if (allUsers.length > 0) {
-        return res.json({ users: allUsers })
+        return res.status(200).json({ users: allUsers })
     }
-    return res.json({ message: "Working Good" })
+    return res.status(404).json({ message: "User Data Not Found" })
 }
 
 const handleSearchUser = async (req, res) => {
@@ -53,7 +53,6 @@ const handelDeleteUser = async (req, res) => {
 
 const handleAddUser = async (req, res) => {
     const body = req.body;
-    console.log(body);
     if (body.first_name && body.last_name && body.email && body.gender && body.job_title) {
         const dbUser = await User.findOne({ email: body.email })
         if (dbUser) {
