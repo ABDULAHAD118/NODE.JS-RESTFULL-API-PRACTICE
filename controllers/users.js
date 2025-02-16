@@ -1,7 +1,10 @@
 const User = require('../models/users')
 
 const handleAllUser = async (req, res) => {
-    // const allUsers = await User.find({});
+    const allUsers = await User.find({});
+    if (allUsers.length > 0) {
+        return res.json({ users: allUsers })
+    }
     return res.json({ message: "Working Good" })
 }
 
@@ -50,6 +53,7 @@ const handelDeleteUser = async (req, res) => {
 
 const handleAddUser = async (req, res) => {
     const body = req.body;
+    console.log(body);
     if (body.first_name && body.last_name && body.email && body.gender && body.job_title) {
         const dbUser = await User.findOne({ email: body.email })
         if (dbUser) {
